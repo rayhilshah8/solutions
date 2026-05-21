@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Unit 7 — Solutions Chemistry Study App</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:system-ui,-apple-system,sans-serif;color:#1a1a1a;background:#f5f5f0;min-height:100vh;padding:1rem}
+.app{max-width:720px;margin:0 auto}
+h1{font-size:20px;font-weight:600;margin-bottom:4px}
+.subtitle{font-size:13px;color:#666;margin-bottom:1.5rem}
+.nav{display:flex;gap:8px;margin-bottom:1rem;flex-wrap:wrap}
+.nav-btn{flex:1;min-width:140px;padding:10px 8px;border:1px solid #ddd;border-radius:10px;background:#fff;color:#555;font-size:13px;cursor:pointer;text-align:center;line-height:1.4}
+.nav-btn.active{border:2px solid #534AB7;color:#534AB7;font-weight:600;background:#f0effe}
+.mode-toggle{display:flex;gap:8px;margin-bottom:1.5rem}
+.mode-btn{flex:1;padding:9px;border:1px solid #ddd;border-radius:8px;background:#fff;color:#555;font-size:14px;cursor:pointer;font-weight:500}
+.mode-btn.active{background:#534AB7;color:#fff;border-color:#534AB7}
+.section-title{font-size:18px;font-weight:600;margin-bottom:2px}
+.section-sub{font-size:13px;color:#888;margin-bottom:1.2rem}
+.learn-block{margin-bottom:10px;border:1px solid #e8e8e8;border-radius:12px;overflow:hidden;background:#fff}
+.learn-header{padding:13px 16px;background:#fafafa;font-size:14px;font-weight:600;cursor:pointer;display:flex;justify-content:space-between;align-items:center;user-select:none}
+.learn-header:hover{background:#f0effe}
+.chev{font-size:18px;transition:transform 0.2s;color:#888}
+.learn-body{padding:16px;font-size:14px;line-height:1.8;display:none;border-top:1px solid #eee}
+.learn-body.open{display:block}
+.learn-body p{margin-bottom:12px}
+.learn-body p:last-child{margin-bottom:0}
+.why{background:#f0effe;border-left:3px solid #534AB7;padding:10px 14px;border-radius:0 8px 8px 0;margin:14px 0;font-size:13px;line-height:1.7}
+.why strong{color:#3b339e}
+.analogy{background:#fff8e8;border-left:3px solid #e8a020;padding:10px 14px;border-radius:0 8px 8px 0;margin:14px 0;font-size:13px;line-height:1.7}
+.analogy strong{color:#a06010}
+.math-box{background:#f0f0f0;padding:10px 14px;border-radius:8px;margin:12px 0;font-family:monospace;font-size:13px;line-height:1.7;white-space:pre-wrap}
+.eg{border:1px solid #e8e8e8;border-radius:8px;padding:13px;margin:12px 0;background:#fcfcfc}
+.eg-title{font-size:11px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px}
+.eg p{margin-bottom:6px}
+.eg p:last-child{margin-bottom:0}
+.callout{background:#e8f8f0;border-left:3px solid #0a5c44;padding:10px 14px;border-radius:0 8px 8px 0;margin:14px 0;font-size:13px;line-height:1.7}
+.callout strong{color:#0a5c44}
+/* Flashcards */
+.fc-controls{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;flex-wrap:wrap;gap:8px}
+.fc-filter{display:flex;gap:6px;flex-wrap:wrap}
+.fc-filter-btn{padding:5px 12px;border:1px solid #ddd;border-radius:20px;background:#fff;color:#555;font-size:12px;cursor:pointer;font-weight:500}
+.fc-filter-btn.active{background:#534AB7;color:#fff;border-color:#534AB7}
+.fc-progress{font-size:13px;color:#888;display:flex;align-items:center;gap:10px}
+.shuffle-btn{padding:6px 12px;border:1px solid #ddd;border-radius:8px;background:#fff;color:#555;font-size:12px;cursor:pointer}
+.shuffle-btn:hover{background:#f5f5f0}
+.card{border:1px solid #e0e0e0;border-radius:14px;background:#fff;cursor:pointer;user-select:none;display:flex;flex-direction:column}
+.card-front{padding:24px 24px 20px;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:200px;text-align:center}
+.card-type-badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:16px}
+.card-type-badge.conceptual{background:#ede8fe;color:#3b339e}
+.card-type-badge.computational{background:#e1f5ee;color:#0a5c44}
+.card-q{font-size:15px;line-height:1.6;font-weight:500;color:#1a1a1a;text-align:center}
+.card-hint{font-size:12px;color:#ccc;margin-top:16px;text-align:center}
+.card-back{padding:20px 24px;border-top:1px solid #eee;display:none}
+.card-back.shown{display:block}
+.card-answer{background:#e8f8f0;border-radius:8px;padding:12px 14px;font-size:14px;font-weight:600;color:#0a5c44;margin-bottom:14px}
+.card-explain{font-size:13px;line-height:1.75;color:#444}
+.card-nav{display:flex;gap:8px;margin-top:12px}
+.card-nav button{flex:1;padding:9px;border:1px solid #ddd;border-radius:8px;background:#fff;color:#333;font-size:14px;cursor:pointer;font-weight:500}
+.card-nav button:hover:not(:disabled){background:#f5f5f0}
+.card-nav button:disabled{opacity:0.3;cursor:not-allowed}
+</style>
+</head>
+<body>
+<div class="app">
+  <h1>Unit 7 — Solutions</h1>
+  <p class="subtitle">Chemistry study app · Learn mode + Flashcard practice</p>
+  <div class="nav">
+    <button class="nav-btn active" onclick="switchSection(0)">Section 1<br><small>Solutions &amp; Molarity</small></button>
+    <button class="nav-btn" onclick="switchSection(1)">Section 2<br><small>Solution Stoichiometry</small></button>
+    <button class="nav-btn" onclick="switchSection(2)">Section 3<br><small>Acids &amp; Bases</small></button>
+  </div>
+  <div class="mode-toggle">
+    <button class="mode-btn active" onclick="switchMode('learn')">Learn</button>
+    <button class="mode-btn" onclick="switchMode('practice')">Practice flashcards</button>
+  </div>
+  <div id="learn-area"></div>
+  <div id="practice-area" style="display:none"></div>
+</div>
+
+<script>
+const sections = [
+{
+  title:"Section 1 — Solutions &amp; Molarity",
+  sub:"Notes 5 · Practices 5A, 5B, 5C",
+  learn:[
+    {
+      title:"What is a solution, really?",
+      body:`<p>You already know what a mixture is — it's just two or more substances combined. But there's a spectrum. At one end you have a salad: completely heterogeneous, visibly different at every spot. At the other end you have something like salt water: no matter where you sample it, it's identical. That extreme — where the mixing is so complete that no amount of looking can find a boundary between components — is a <strong>solution</strong>.</p>
+<p>The formal name for this is a <strong>homogeneous mixture</strong>. "Homogeneous" just means "same throughout" (from the Greek <em>homos</em> = same). Two conditions must hold: (1) components are dispersed completely evenly, and (2) particles are so small they're invisible — you'd need to go down to the atomic scale to find individual solute particles.</p>
+<div class="analogy"><strong>Picture this:</strong> Imagine dropping a single drop of red food dye into a glass of water and waiting. At first it's heterogeneous — you can see the red cloud. But after it fully disperses, no spot in the glass is any more or less red than another. That's the moment it becomes a solution. The transition is about uniformity, not about what substances are involved.</div>
+<p>This is why smog isn't a solution even though it's a gas mixture — step across town and the air quality changes. And it's why a salad isn't one — a forkful from the top might be all croutons while one from the bottom is all lettuce. Inconsistency disqualifies something as a solution.</p>
+<p>What's interesting is that state of matter is irrelevant. Air (gas + gas), brass (solid + solid), salt water (solid + liquid), carbonated drinks (gas + liquid) — all solutions, because all are perfectly uniform.</p>`
+    },
+    {
+      title:"Solute and solvent — who dissolves whom?",
+      body:`<p>Inside any solution, one component plays the role of host and the others are guests. The <strong>solvent</strong> is the host — it's the substance present in the largest amount, and it's the one doing the dissolving. The <strong>solute(s)</strong> are the guests — they get dissolved into the solvent and effectively disappear into it.</p>
+<div class="analogy"><strong>Think of it like a crowded party:</strong> the venue (solvent) doesn't move — everyone comes to it. The guests (solutes) arrive and spread out into the space. The party can only happen because the venue is overwhelmingly dominant. If you had 1000 guests in a studio apartment, it stops working — too much solute, not enough solvent to hold it all.</div>
+<p>In chemistry, water is by far the most common solvent. This is so ubiquitous that solutions dissolved in water get their own label: <strong>aqueous solutions</strong> (from the Latin <em>aqua</em>, water). In chemical equations, "(aq)" after a formula tells you that substance is dissolved in water — it's not sitting there as a solid crystal, it's broken apart and floating as ions or molecules surrounded by water.</p>
+<p>Why is water such a good solvent? Its molecules are polar — one end is slightly negative, the other slightly positive. This lets water molecules wedge between and surround ionic compounds (like NaCl), pulling the ions apart and holding them in solution. "Like dissolves like" — polar solvents dissolve polar and ionic solutes. That's the legacy of all the IMF work from earlier units paying off here.</p>`
+    },
+    {
+      title:"Concentration and Molarity — measuring the strength of a solution",
+      body:`<p>Here's the problem chemists faced: most solutions share the same solvent (water). So water alone tells you nothing about what solution you have. What distinguishes solutions from each other is their solute — specifically, <em>how much</em> solute is crammed into a given volume. That's concentration.</p>
+<p>You could measure concentration many ways — grams per liter, percentage by mass, and so on. But chemists settled on <strong>Molarity</strong> as the standard because it measures in moles, and moles count actual particles. This matters because reactions happen between particles, not between grams.</p>
+<div class="analogy"><strong>Why moles and not grams?</strong> Imagine two solutions: one has 58.5 g of table salt (NaCl) dissolved per liter, another has 58.5 g of table sugar (C₁₂H₂₂O₁₁) dissolved per liter. Same grams, right? But NaCl has a molar mass of 58.5 g/mol, so that's 1 mole of NaCl — 6×10²³ pairs of Na⁺ and Cl⁻ ions. Sugar has a molar mass of 342 g/mol, so 58.5 g is only 0.17 moles — far fewer molecules. Same grams, wildly different particle counts. Reactions care about particle counts. Moles capture that; grams don't.</div>
+<div class="math-box">Molarity (M) = moles of solute ÷ liters of solution</div>
+<p>1 M = 1 mole of solute per liter of solution. So a 1 M NaCl solution has 1 mole of NaCl (about 58.5 grams) dissolved in every liter of total solution.</p>
+<div class="callout"><strong>Note:</strong> "liters of solution" — not liters of water. If you dissolve something in water, the total volume of the resulting solution is slightly different from the volume of water you started with. This distinction matters when making solutions precisely in a lab.</div>`
+    },
+    {
+      title:"Converting grams to moles — dimensional analysis from scratch",
+      body:`<p>The Molarity equation needs moles, but problems usually give you grams. The bridge between them is <strong>molar mass</strong> — the mass of exactly one mole of a substance, in grams. You calculate it by adding up the atomic masses (from the periodic table) of every atom in the formula.</p>
+<div class="eg"><div class="eg-title">Molar mass of NaCl</div>
+<p>Na = 23.0 &nbsp; Cl = 35.5 &nbsp; → &nbsp; NaCl = 58.5 g/mol</p>
+<p>This means: 1 mole of NaCl weighs 58.5 grams. Or equivalently: every 58.5 grams of NaCl contains exactly 1 mole of NaCl.</p></div>
+<p>To convert grams → moles, you divide by molar mass. But <em>why</em> does that work? This is where <strong>dimensional analysis</strong> comes in — the technique of tracking units like they're part of the math, and arranging fractions so unwanted units cancel.</p>
+<div class="analogy"><strong>Unit cancellation is like reducing fractions:</strong> if you have (6 apples) ÷ (3 apples/bag), the word "apples" appears on top and bottom — it cancels — and you're left with "bags." You don't need to memorize the rule; the units tell you which way to divide.</div>
+<div class="math-box">2 g NaCl × (1 mol / 58.5 g) = 0.0342 mol
+
+Check: g × (mol/g) = mol ✓  ← grams cancel, moles remain</div>
+<p>If you accidentally flip it — 2 g × (58.5 g / 1 mol) — you'd get units of g²/mol, which is nonsense. That's the beauty of dimensional analysis: wrong setup gives you absurd units, which immediately signals the error.</p>
+<div class="eg"><div class="eg-title">Molar mass of C₁₁H₂₂O₁₁ (sugar)</div>
+<p>C: 12.0 × 11 = 132 &nbsp;&nbsp; H: 1.01 × 22 = 22.2 &nbsp;&nbsp; O: 16.0 × 11 = 176</p>
+<p>Total = 330.2 g/mol</p>
+<p>So 2 g of sugar = 2 ÷ 330.2 = 0.00606 mol — far fewer moles than 2 g of NaCl (0.0342 mol), because each sugar molecule is so much heavier.</p></div>`
+    },
+    {
+      title:"Using the Molarity equation — all three rearrangements",
+      body:`<p>M = mol/L is one equation with three variables. Depending on what a problem gives you and what it asks for, you rearrange it. This isn't memorizing three formulas — it's understanding one relationship and manipulating it algebraically.</p>
+<div class="analogy"><strong>Think of it like speed = distance/time.</strong> If you know speed and time but want distance, you rearrange: distance = speed × time. The equation hasn't changed — you just isolated what you need. M = mol/L works exactly the same way.</div>
+<div class="math-box">Given M and L, want mol:    mol = M × L
+Given mol and M, want L:    L = mol / M
+Given mol and L, want M:    M = mol / L</div>
+<div class="why"><strong>The dimensional analysis check for mol = M × L:</strong> M has units of mol/L. L has units of L. Multiply them: (mol/L) × L = mol. The L cancels. You're left with mol. This isn't magic — it's unit tracking doing the work for you. Any time you multiply or divide, ask: do the units work out to what I want?</div>
+<div class="why"><strong>Why does L = mol ÷ M work?</strong> Dividing mol by (mol/L) is the same as multiplying mol by (L/mol) — you flip the fraction. Now mol cancels top and bottom, leaving L. Concretely: 0.1 mol ÷ (6 mol/L) = 0.1 × (L/6) = 0.0167 L.</div>
+<div class="eg"><div class="eg-title">Full example — finding molarity from grams</div>
+<p>2 g NaCl in 1.5 L of water. What is M?</p>
+<p>Step A — convert g to mol: 2 ÷ 58.5 = 0.0342 mol</p>
+<p>Step B — already in L: 1.5 L</p>
+<p>Step C — M = 0.0342 ÷ 1.5 = <strong>0.0228 M</strong></p></div>
+<div class="eg"><div class="eg-title">Working backwards — finding moles from M and V</div>
+<p>0.100 M AgNO₃, 1.50 L. How many moles?</p>
+<p>mol = M × L = 0.100 × 1.50 = <strong>0.150 mol</strong></p>
+<p>Check: (mol/L) × L = mol ✓</p></div>`
+    },
+    {
+      title:"Multi-step unit conversion — chaining dimensional analysis",
+      body:`<p>Sometimes getting to the units you need requires more than one step. The technique is always the same: arrange conversion factors as fractions so every unit you don't want appears once on top and once on bottom — and therefore cancels out — leaving only the unit you do want.</p>
+<div class="why"><strong>The deep reason this works:</strong> any conversion factor is just the number 1 written in disguise. 1 L / 1000 mL = 1, because 1 L and 1000 mL are the same amount. Multiplying by 1 doesn't change the quantity — only the unit. So you can chain as many of these "disguised 1s" as needed without changing the actual amount you started with.</div>
+<div class="eg"><div class="eg-title">Convert 1 pint to liters</div>
+<p>Known: 1 gal = 8 pints (so 1 pint = 1/8 gal = 16 fl oz). Also: 1 fl oz = 28.4 mL, 1 L = 1000 mL.</p>
+<div class="math-box">1 pint × (16 fl oz / 1 pint) × (28.4 mL / 1 fl oz) × (1 L / 1000 mL)
+
+Cancel audit:
+  pints ✓ (top and bottom)
+  fl oz ✓ (top and bottom)
+  mL ✓ (top and bottom)
+  Left with: L ✓
+
+= 1 × 16 × 28.4 / 1000 = 0.454 L</div></div>
+<p>Before doing any arithmetic, always write out the full chain and verify the units cancel to what you want. Catching a flipped fraction at the setup stage is far easier than hunting for an error after calculating.</p>`
+    },
+    {
+      title:"Saturation — why dissolving has a limit",
+      body:`<p>Dissolving isn't magic — it's a physical process where solvent molecules surround solute particles and pull them away from each other. Water molecules do this by orienting their polar ends toward the solute ions (positive ends toward negative ions, negative ends toward positive ions) and essentially "caging" each particle in a shell of water molecules.</p>
+<p>But water only has so many molecules. Once every available water molecule is occupied holding a solute particle, there's nothing left to pull more solute apart. Any additional solute you add just sits at the bottom, undissolved. At this point the solution is <strong>saturated</strong>.</p>
+<div class="analogy"><strong>Think of a parking lot:</strong> water molecules are parking spaces, solute particles are cars. Once every space is filled, more cars can't park — they sit in the street. Adding more cars doesn't create more spaces. The lot is saturated.</div>
+<p>Below the limit: <strong>unsaturated</strong> (more could dissolve). At the limit: <strong>saturated</strong>. Temporarily above the limit via heat tricks (heating increases solubility, then slowly cooling): <strong>supersaturated</strong> — unstable, like a system waiting to collapse. Those videos of instant crystallization when you tap a supersaturated solution? That's supersaturation collapsing into saturation.</p>
+<p>This is why the PhET simulation stops at ~0.5 M for K₂Cr₂O₇ — that compound's specific molecular structure limits how many of its particles water can cage per liter at room temperature.</p>`
+    },
+    {
+      title:"Dilution — spreading the same solute thinner",
+      body:`<p>Dilution is conceptually simple: add water to make a solution less concentrated. But the reason the math works the way it does is worth understanding deeply, because it comes up in a lot of different contexts.</p>
+<p>When you add water to a solution, <em>the number of solute particles doesn't change</em>. The particles don't disappear — they just have more space to spread into. So if you had 0.1 moles of HCl in 100 mL and you add 900 mL of water, you still have 0.1 moles of HCl — now in 1000 mL. The moles are conserved; the concentration drops.</p>
+<div class="analogy"><strong>Imagine squeezing orange juice concentrate into a glass:</strong> you get maybe half a cup of thick, intensely flavored juice (high concentration). Add three more cups of water — still the same amount of juice solids, but now spread across four times the volume. The flavor is weaker (lower concentration), but you didn't lose any of the actual juice. That's dilution.</div>
+<div class="math-box">Since moles don't change: moles before = moles after
+And since moles = M × V:
+
+M₁ × V₁ = M₂ × V₂
+
+This isn't a new formula — it's just moles = moles, written out.</div>
+<p>You also need to track the volume of water added separately:</p>
+<div class="math-box">V_stock + V_water added = V_final
+So: V_water added = V_final − V_stock</div>
+<div class="eg"><div class="eg-title">Prepare 500 mL of 0.2 M HCl from 6 M stock</div>
+<p>M₁V₁ = M₂V₂ → (6)(V₁) = (0.2)(0.500 L) → V₁ = 0.100/6 = <strong>0.0167 L of stock</strong></p>
+<p>Water to add = 0.500 − 0.0167 = <strong>0.483 L</strong></p>
+<p>Sanity check: you're diluting by a factor of 30 (6 M → 0.2 M), so you'd expect to use a very small volume of stock and a lot of water. 16.7 mL of stock + 483 mL water ✓</p></div>`
+    }
+  ],
+  cards:[
+    {type:"conceptual",q:"What are the two conditions that must be true for a mixture to be called a solution?",a:"(1) All components are dispersed completely evenly throughout. (2) Particle sizes are so small they cannot be distinguished — you can't see individual bits of solute.",explain:"A solution is a homogeneous mixture. 'Homogeneous' means the same throughout — a sample from the top, middle, or bottom would be identical. This is different from a heterogeneous mixture like salad, where different spots look different."},
+    {type:"conceptual",q:"Is smog a solution? Why or why not?",a:"No. Smog is heterogeneous — its composition varies from place to place, so it doesn't meet the requirement of being uniform throughout.",explain:"Even though smog is made of gases, uniformity is what defines a solution — not the state of matter. Smog is denser in some areas than others, making it heterogeneous by definition."},
+    {type:"conceptual",q:"Can a solution contain components in two different states of matter? Give an example.",a:"Yes. Salt water (solid + liquid), carbonated drinks (gas + liquid), and air (gas + gas) are all solutions. State of matter doesn't matter — uniformity does.",explain:"What makes something a solution is that the components mix completely and evenly. As long as that holds, any combination of states of matter can form a solution."},
+    {type:"conceptual",q:"What is the solvent in a solution, and how do you identify it?",a:"The solvent is the component present in the largest amount — it does the dissolving.",explain:"In salt water, water is the solvent because there is far more water than salt. In air, nitrogen (~78%) is the solvent. The solvent is always the dominant component."},
+    {type:"conceptual",q:"What does 'aqueous solution' mean, and how is it shown in equations?",a:"Aqueous means dissolved in water. The label (aq) next to a formula in an equation means that substance is dissolved in water.",explain:"Most chemistry solutions are aqueous because water is such an effective solvent for ionic and polar compounds. Recognizing (aq) vs (s) for solid is important for understanding what's dissolved and what isn't."},
+    {type:"conceptual",q:"Why do chemists use molarity instead of grams per liter?",a:"Reactions depend on the number of particles, not their mass. Moles count particles. Two solutions with the same g/L could have very different numbers of particles if the solutes have different molar masses.",explain:"For example: 58.5 g/L of NaCl = 1.0 M. But 58.5 g/L of sugar (molar mass 330 g/mol) = only 0.177 M. Same mass, very different particle counts — and reactions care about particle counts."},
+    {type:"conceptual",q:"What does a molarity of 3 M mean in plain language?",a:"There are 3 moles of solute dissolved in every 1 liter of solution.",explain:"Molarity is always a rate: moles per liter. So 3 M = 3 mol/L. If you had 2 liters of a 3 M solution, you'd have 6 moles of solute total (3 mol/L × 2 L = 6 mol)."},
+    {type:"conceptual",q:"What is a saturated solution?",a:"A solution that has dissolved the maximum possible amount of solute at a given temperature. Extra solute added will not dissolve — it sits at the bottom.",explain:"Every solute has a solubility limit. This exists because water molecules can only 'hold' a finite number of solute particles at once. Once they're all occupied, no more dissolving can happen."},
+    {type:"conceptual",q:"In a dilution, what stays the same and what changes?",a:"Moles of solute stays the same. Volume increases, and therefore molarity decreases.",explain:"You're only adding water — no solute is added or removed. Same number of particles spread across a bigger container means lower concentration. The particles themselves don't change."},
+    {type:"conceptual",q:"Where does M₁V₁ = M₂V₂ come from? Why does it work?",a:"Because moles of solute don't change during dilution. Since moles = M × V, moles before (M₁V₁) = moles after (M₂V₂).",explain:"It's not a separate formula — it's just 'moles before = moles after' written using M×V for each side. Understanding this means you could re-derive it without memorizing it."},
+    {type:"conceptual",q:"What is the difference between concentrated/dilute and strong/weak when describing acids?",a:"Concentrated/dilute = how much acid is present. Strong/weak = how completely it dissociates in water. These are completely independent.",explain:"A concentrated weak acid has lots of acid molecules, most of which stay intact. A dilute strong acid has very little acid, but all of it dissociates. Never confuse these two axes."},
+    {type:"computational",q:"Calculate the molar mass of Ca(OH)₂.",a:"74.1 g/mol",explain:"Ca=40.1, O=16.0×2=32.0, H=1.01×2=2.02. Total: 40.1+32.0+2.02=74.1 g/mol. Multiply each element's atomic mass by how many times it appears in the formula, then add all results."},
+    {type:"computational",q:"How many moles are in 117 g of NaCl? (molar mass NaCl = 58.5 g/mol)",a:"2.00 mol",explain:"Set up to cancel grams: 117 g × (1 mol / 58.5 g). Grams on top and bottom cancel, leaving mol. 117 ÷ 58.5 = 2.00 mol. Always write it as a fraction — it shows which way to divide and confirms units cancel correctly."},
+    {type:"computational",q:"How many grams are in 0.350 mol of NaCl? (molar mass = 58.5 g/mol)",a:"20.5 g",explain:"Want grams, so molar mass goes on top: 0.350 mol × (58.5 g / 1 mol). Moles cancel, leaving grams. 0.350 × 58.5 = 20.475 ≈ 20.5 g. This is the reverse of finding moles — just flip which way the fraction points."},
+    {type:"computational",q:"What is the molarity of a solution with 0.500 mol NaOH in 2.00 L of solution?",a:"0.250 M",explain:"M = mol ÷ L = 0.500 ÷ 2.00 = 0.250 M. Units: mol ÷ L = mol/L = M. ✓ Direct application of the molarity formula."},
+    {type:"computational",q:"How many moles of HCl are in 350 mL of 2.00 M HCl?",a:"0.700 mol",explain:"Convert mL→L: 350 mL × (1 L/1000 mL) = 0.350 L. Then mol = M × V = 2.00 × 0.350 = 0.700 mol. Units: (mol/L) × L = mol. ✓ The L cancels."},
+    {type:"computational",q:"What is the molarity of 5.85 g NaCl dissolved in enough water to make 500 mL of solution?",a:"0.200 M",explain:"Step A: mol = 5.85 ÷ 58.5 = 0.100 mol. Step B: 500 mL = 0.500 L. Step C: M = 0.100 ÷ 0.500 = 0.200 M. Three steps every time — convert to mol, convert to L, then divide."},
+    {type:"computational",q:"How many liters of 4.00 M solution can be made from 2.00 mol of solute?",a:"0.500 L",explain:"L = mol ÷ M = 2.00 mol ÷ 4.00 mol/L. Dividing mol by (mol/L) is multiplying by (L/mol) — mol cancels, leaving L. 2.00 ÷ 4.00 = 0.500 L."},
+    {type:"computational",q:"You want 250 mL of 0.500 M HCl from a 6.00 M stock. What volume of stock do you need?",a:"0.0208 L (20.8 mL)",explain:"M₁V₁=M₂V₂ → V₁=(M₂×V₂)/M₁=(0.500×0.250)/6.00=0.125/6.00=0.0208 L. This makes sense: you need a small volume of concentrated stock because it already has lots of solute packed in."},
+    {type:"computational",q:"For the above dilution (250 mL of 0.500 M from 6.00 M stock), how much water do you add?",a:"0.229 L (229 mL)",explain:"Water = V_final − V_stock = 0.250 − 0.0208 = 0.229 L. You take 20.8 mL of stock and add water until the total volume reaches 250 mL."},
+    {type:"computational",q:"A 12.0 M HNO₃ stock. You want 500 mL of 1.00 M HNO₃. What volume of stock?",a:"0.0417 L (41.7 mL)",explain:"V₁=(1.00×0.500)/12.0=0.500/12.0=0.0417 L. Take 41.7 mL of concentrated acid and dilute up to 500 mL total with water."},
+    {type:"computational",q:"Papa Bear's porridge is 0.4 M. Adding 300 mL water gives 800 mL of Baby Bear's porridge. What is Baby Bear's concentration?",a:"0.25 M",explain:"Papa's original volume: V+300=800 → V=500 mL. M₁V₁=M₂V₂: (0.4)(500)=(M₂)(800) → 200=800M₂ → M₂=0.25 M. mL can be used on both sides since they cancel in the ratio."},
+    {type:"computational",q:"125 cm³ of solution contains 3.5 mol of solute. What is the molarity?",a:"28 M",explain:"1 cm³ = 1 mL, so 125 cm³ = 0.125 L. M = 3.5 ÷ 0.125 = 28 M. Unusually high in practice, but the process is identical: mol ÷ L = M."},
+    {type:"computational",q:"Which is more concentrated: Solution A (50.0 g CaCO₃ in 500 mL) or Solution B (6.0 mol H₂SO₄ in 4.0 L)?",a:"B is more concentrated at 1.5 M vs A at 1.0 M",explain:"A: mol CaCO₃=50.0/100=0.500 mol; M=0.500/0.500=1.00 M. B: M=6.0/4.0=1.5 M. Always convert to molarity before comparing — you can't directly compare grams to moles."}
+  ]
+},
+{
+  title:"Section 2 — Solution Stoichiometry &amp; Limiting Reactants",
+  sub:"Notes 6 · Practices 6A, 6B",
+  learn:[
+    {
+      title:"Solution stoichiometry — same idea, different starting point",
+      body:`<p>Stoichiometry is the practice of using a balanced chemical equation as a recipe: if you know how much of one ingredient you have, you can figure out how much of every other ingredient is needed or produced. You've done this before starting from grams of a pure solid.</p>
+<p>Solution stoichiometry is identical in every way — except your starting information comes in a different form. Instead of "I have 5 grams of X," you now have "I have 250 mL of 0.200 M X." The goal is still to get to moles, because moles are what the balanced equation understands. Once you have moles, you're doing the exact same stoichiometry you've always done.</p>
+<div class="analogy"><strong>Think of moles as the universal translator.</strong> Your starting information might be in grams, or in volume+concentration, or in liters of gas at STP. The balanced equation speaks only in moles. So whatever language your data comes in, you translate it to moles first, use the equation, then translate the answer back to whatever the problem asks for. The translator is always moles.</div>
+<p>For solutions, the translation is: <strong>mol = M × V</strong>. That's it. Once you have moles of your starting substance, the rest of the stoichiometry is business as usual.</p>`
+    },
+    {
+      title:"The molar ratio — the heart of stoichiometry",
+      body:`<p>A balanced chemical equation is more than just a statement that reactants turn into products. The coefficients encode the exact ratio in which things react and are produced — at the particle level. And because a mole is just a counting unit (like "dozen"), those ratios apply directly to moles.</p>
+<div class="eg"><div class="eg-title">AgNO₃(aq) + NaCl(aq) → AgCl(s) + NaNO₃(aq)</div>
+<p>All coefficients are 1. This means: for every 1 molecule of AgNO₃ that reacts, exactly 1 molecule of NaCl is consumed, 1 formula unit of AgCl forms, and 1 formula unit of NaNO₃ forms.</p>
+<p>Scaled to moles: for every 1 mol of AgNO₃, exactly 1 mol of NaCl is consumed, 1 mol of AgCl forms, 1 mol of NaNO₃ forms.</p></div>
+<div class="why"><strong>Why does the particle ratio equal the mole ratio?</strong> A mole of AgNO₃ and a mole of NaCl each contain exactly 6.022×10²³ particles. If each particle of AgNO₃ reacts with exactly one particle of NaCl, then 6.022×10²³ particles of AgNO₃ reacts with exactly 6.022×10²³ particles of NaCl — one mole with one mole. The 1:1 particle ratio becomes a 1:1 mole ratio automatically.</div>
+<p>In dimensional analysis, the molar ratio becomes a conversion factor. To go from mol AgNO₃ to mol NaCl:</p>
+<div class="math-box">0.150 mol AgNO₃ × (1 mol NaCl / 1 mol AgNO₃) = 0.150 mol NaCl
+
+mol AgNO₃ cancels top and bottom → left with mol NaCl ✓</div>
+<p>If the ratio were 2:1 (like in 2NaOH + CuSO₄ → ...), you'd write (1 mol CuSO₄ / 2 mol NaOH) — dividing by 2 because 2 moles of NaOH are needed per 1 mole of CuSO₄.</p>`
+    },
+    {
+      title:"Full solution stoichiometry walkthrough",
+      body:`<p>Problem: How much solid NaCl must be added to 1.50 L of 0.100 M AgNO₃ to react with all the Ag⁺? How much AgCl forms?</p>
+<p><strong>Step 1 — translate solution data to moles:</strong></p>
+<div class="math-box">mol AgNO₃ = M × V = 0.100 mol/L × 1.50 L = 0.150 mol
+Units: (mol/L) × L = mol ✓</div>
+<p><strong>Step 2 — write and balance the equation:</strong><br>AgNO₃ + NaCl → AgCl + NaNO₃ &nbsp; (1:1:1:1, already balanced)</p>
+<p><strong>Step 3 — find grams of NaCl needed using the molar ratio:</strong></p>
+<div class="math-box">0.150 mol AgNO₃ × (1 mol NaCl / 1 mol AgNO₃) × (58.5 g / 1 mol NaCl)
+
+= 8.775 g NaCl</div>
+<div class="why"><strong>Why does this give the grams of NaCl that will completely react with all the AgNO₃?</strong> The molar ratio (1:1) tells you that to neutralize every mole of AgNO₃, you need exactly one mole of NaCl — no more, no less. You have 0.150 mol of AgNO₃, so you need 0.150 mol of NaCl. Converting those moles to grams using molar mass gives you the mass of NaCl that perfectly matches all the AgNO₃ present.</div>
+<p><strong>Step 4 — find grams of AgCl formed:</strong></p>
+<div class="math-box">0.150 mol AgNO₃ × (1 mol AgCl / 1 mol AgNO₃) × (143.5 g / 1 mol AgCl)
+
+= 21.5 g AgCl</div>
+<p>Notice both steps 3 and 4 start from the same 0.150 mol of AgNO₃ — because the equation tells you everything is produced or consumed in direct proportion to the AgNO₃ used up.</p>`
+    },
+    {
+      title:"Limiting reactants — why reactions stop early",
+      body:`<p>Here's something that seems obvious in everyday life but is worth stating precisely in chemistry: a reaction can only proceed as long as <em>all</em> of its reactants are present. The moment any one reactant is completely consumed, the reaction stops — full stop — even if other reactants are still sitting there with nowhere to go.</p>
+<p>The reactant that gets used up first and thereby stops the reaction is called the <strong>limiting reactant</strong>. Every other reactant that's still present when the reaction ends is called an <strong>excess reactant</strong>.</p>
+<div class="analogy"><strong>The burger analogy your packet uses is perfect — let's extend it:</strong> a burger requires 1 bun and 1 patty. You have 10 buns and 2 patties. You make 2 burgers and stop. You have 8 buns left over (excess), but the reaction — burger assembly — has halted because patties (the limiting reactant) ran out. It doesn't matter how many buns you have; they're useless without patties.</div>
+<p>The limiting reactant matters because it determines the maximum amount of product you can possibly get — the <strong>theoretical yield</strong>. If you want more product, you'd need to add more of the limiting reactant.</p>
+<div class="why"><strong>Why does one reactant run out before the other?</strong> Because you almost never mix them in exactly the right ratio. The balanced equation tells you what the perfect ratio would be. If you have too much of one reactant relative to that ratio, the excess will be left over when the other runs out.</div>`
+    },
+    {
+      title:"Finding the limiting reactant — the method",
+      body:`<p>The procedure: for each reactant, calculate how much product it <em>would</em> produce if it were the only constraint (pretending the other reactant has unlimited supply). The reactant whose hypothetical yield is <strong>smallest</strong> is the limiting reactant — because it runs out first and caps the actual yield at that smaller number.</p>
+<div class="why"><strong>Why assume the other reactant is unlimited when running each calculation?</strong> You're asking a specific question for each reactant: "If this substance were the bottleneck, how much product would form?" To isolate that question, you have to remove all other constraints. Then you compare the answers. The real world enforces both constraints simultaneously, which is why the smallest hypothetical yield is the actual yield — any higher and the real limiting reactant would have run out before you got there.</div>
+<div class="eg"><div class="eg-title">Ba(NO₃)₂ + K₂CrO₄ → BaCrO₄ + 2KNO₃</div>
+<p>Given: 3.50×10⁻³ mol Ba(NO₃)₂ and 265 mL of 0.0100 M K₂CrO₄. Molar mass BaCrO₄ = 253 g/mol.</p>
+<p><strong>From Ba(NO₃)₂</strong> (assuming unlimited K₂CrO₄):<br>3.50×10⁻³ × (1/1) × 253 = <strong>0.886 g</strong></p>
+<p><strong>From K₂CrO₄</strong> (assuming unlimited Ba(NO₃)₂):<br>mol = 0.0100 × 0.265 = 2.65×10⁻³ mol<br>2.65×10⁻³ × (1/1) × 253 = <strong>0.670 g</strong></p>
+<p>K₂CrO₄ gives less → <strong>limiting reactant</strong>. Actual yield = <strong>0.670 g BaCrO₄</strong>.</p></div>`
+    },
+    {
+      title:"Percent yield — the gap between theory and reality",
+      body:`<p>Theoretical yield is what stoichiometry predicts you should get — assuming a perfect reaction, no losses, no side products, complete transfer of every particle. In a real lab, you never achieve this. Products stick to glassware. Competing reactions steal some of your reactants. Transfers are imperfect. Some product remains dissolved in solution instead of precipitating.</p>
+<div class="math-box">% yield = (actual yield / theoretical yield) × 100%</div>
+<div class="analogy"><strong>Think of theoretical yield as the ideal score on a test you could get if everything went perfectly — 100 points.</strong> Actual yield is what you actually scored. Percent yield is your grade. In chemistry, a 90%+ yield is excellent. 100% is essentially impossible because something always goes wrong, even in professional labs.</div>
+<div class="why"><strong>Percent yield can never exceed 100% in a legitimate experiment.</strong> If you seem to get more product than theoretically possible, something went wrong — perhaps the product wasn't fully dry (water added to the mass), or you made an error in the calculation. It's a useful self-check: if % yield > 100%, go back and find the error.</div>
+<div class="eg"><div class="eg-title">Example</div>
+<p>Theoretical = 141.7 g. Actual = 75.0 g.</p>
+<p>% yield = (75.0 / 141.7) × 100 = <strong>52.9%</strong></p>
+<p>This means you recovered about half the maximum possible product.</p></div>`
+    }
+  ],
+  cards:[
+    {type:"conceptual",q:"What is the very first step in any solution stoichiometry problem, and why?",a:"Convert to moles using mol = M × V. The balanced equation's coefficients only work in moles.",explain:"The molar ratio tells you how many moles of one substance correspond to how many moles of another. To use that ratio, you must be working in moles. M × V gets you there from solution data: (mol/L) × L = mol. ✓"},
+    {type:"conceptual",q:"What does a coefficient in a balanced equation tell you about moles?",a:"The coefficients give the exact molar ratio in which substances react and are produced.",explain:"If the coefficient for A is 2 and for B is 1, then exactly 2 mol of A react with every 1 mol of B. This ratio reflects the particle-level reality of the reaction and applies only to moles."},
+    {type:"conceptual",q:"When you calculate product yield from reactant A assuming B is unlimited, what are you finding?",a:"The hypothetical maximum product A could produce if it were the only constraint — the yield if A were the limiting reactant.",explain:"You do this for every reactant separately. The one with the smallest hypothetical yield is the true limiting reactant — it would run out first. That smallest number is your actual theoretical yield."},
+    {type:"conceptual",q:"Why is the limiting reactant the one that produces the SMALLER amount of product?",a:"Because it runs out first. The reaction stops when it's gone. It caps the yield at whatever its own supply allows.",explain:"Burger analogy: 2 patties limits you to 2 burgers regardless of how many buns you have. The smaller constraint always wins. The other reactant just has leftovers."},
+    {type:"conceptual",q:"What happens to the excess reactant when the reaction ends?",a:"It remains unreacted. Some is left over because the limiting reactant ran out before all of it could be consumed.",explain:"In a real experiment you'd have products AND leftover excess reactant when done. Only the limiting reactant is completely used up."},
+    {type:"conceptual",q:"Why is theoretical yield almost always higher than actual yield?",a:"Because real experiments are imperfect — side reactions, product stuck to glassware, incomplete transfers. Theoretical assumes a perfect reaction.",explain:"Theoretical yield is a ceiling, not a guarantee. Percent yield measures how close to that ceiling you got. 90%+ is considered excellent in most labs."},
+    {type:"conceptual",q:"Why use M × V to get moles in solution stoichiometry rather than the g ÷ molar mass approach?",a:"Because you're given a solution (volume + concentration), not a pure solid mass. M × V → moles directly from solution data.",explain:"Both paths lead to moles — you pick the right one based on what you're given. Given grams? Divide by molar mass. Given volume of solution with known concentration? Multiply M × V."},
+    {type:"computational",q:"You have 1.50 L of 0.100 M AgNO₃. How many moles of AgNO₃?",a:"0.150 mol",explain:"mol = M × V = 0.100 mol/L × 1.50 L = 0.150 mol. Units: (mol/L) × L = mol. The L cancels. ✓"},
+    {type:"computational",q:"AgNO₃ + NaCl → AgCl + NaNO₃. How many grams of NaCl react with 0.150 mol AgNO₃? (molar mass NaCl = 58.5 g/mol)",a:"8.775 g",explain:"Ratio 1:1, so 0.150 mol AgNO₃ needs 0.150 mol NaCl. Convert: 0.150 mol × (58.5 g / 1 mol) = 8.775 g. Mol cancels, leaving g. ✓"},
+    {type:"computational",q:"How many grams of AgCl form from 0.150 mol AgNO₃? (molar mass AgCl = 143.5 g/mol, ratio 1:1)",a:"21.525 g ≈ 21.5 g",explain:"0.150 mol × (1 mol AgCl/1 mol AgNO₃) × (143.5 g/1 mol AgCl) = 21.525 g. Two conversion factors chained — mol AgNO₃ cancels, then mol AgCl cancels, leaving grams."},
+    {type:"computational",q:"Ba(NO₃)₂ + K₂CrO₄ → BaCrO₄ + 2KNO₃. You have 3.50×10⁻³ mol Ba(NO₃)₂. How many grams of BaCrO₄? (molar mass = 253 g/mol)",a:"0.886 g",explain:"3.50×10⁻³ × (1 mol BaCrO₄/1 mol Ba(NO₃)₂) × (253 g/1 mol) = 0.886 g. The 1:1 ratio makes mol-to-mol direct. Multiply by molar mass to get grams."},
+    {type:"computational",q:"Same reaction. 265 mL of 0.0100 M K₂CrO₄. How many grams of BaCrO₄ could it produce?",a:"0.670 g",explain:"mol K₂CrO₄ = 0.0100 × 0.265 = 2.65×10⁻³ mol. 2.65×10⁻³ × (1/1) × 253 = 0.670 g. This is less than 0.886 g → K₂CrO₄ is the limiting reactant. Actual yield = 0.670 g."},
+    {type:"computational",q:"2AgNO₃ + K₂CrO₄ → Ag₂CrO₄ + 2KNO₃. 150 mL of 0.500 M AgNO₃ and 100 mL of 0.400 M K₂CrO₄. Which is limiting? How many grams of Ag₂CrO₄? (molar mass = 332 g/mol)",a:"AgNO₃ is limiting. Yield = 12.45 g",explain:"From AgNO₃: 0.150×0.500=0.0750 mol × (1/2) × 332=12.45 g. From K₂CrO₄: 0.100×0.400=0.0400 mol × (1/1) × 332=13.28 g. AgNO₃ gives less → limiting. Note (1/2): 2 mol AgNO₃ per 1 mol product, so divide by 2."},
+    {type:"computational",q:"2NaOH + CuSO₄ → Cu(OH)₂ + Na₂SO₄. Mix 25.0 mL of 0.350 M NaOH with 45.0 mL of 0.125 M CuSO₄. How many grams of Cu(OH)₂? (molar mass = 97.5 g/mol)",a:"0.426 g",explain:"From NaOH: 0.0250×0.350=8.75×10⁻³ mol × (1/2) × 97.5=0.426 g. From CuSO₄: 0.0450×0.125=5.625×10⁻³ mol × (1/1) × 97.5=0.549 g. NaOH is limiting → 0.426 g. The (1/2) is from the equation: 2 mol NaOH per 1 mol Cu(OH)₂."},
+    {type:"computational",q:"HCl + NaOH → NaCl + H₂O. What volume of 0.496 M HCl neutralizes 20.0 mL of 0.809 M NaOH?",a:"0.0326 L (32.6 mL)",explain:"mol NaOH = 0.0200×0.809 = 0.01618 mol. Ratio 1:1 → 0.01618 mol HCl needed. V = mol/M = 0.01618/0.496 = 0.0326 L. Rearranging M=mol/L: V=mol/M. Units: mol ÷ (mol/L) = L. ✓"},
+    {type:"computational",q:"3CaCl₂ + 2H₃PO₄ → Ca₃(PO₄)₂ + 6HCl. How many grams of Ca₃(PO₄)₂ from 2.50 L of 0.250 M CaCl₂ with excess H₃PO₄? (molar mass = 310 g/mol)",a:"64.6 g",explain:"mol CaCl₂ = 2.50×0.250 = 0.625 mol × (1 mol product / 3 mol CaCl₂) × 310 = 0.2083×310 = 64.6 g. The ratio is 1:3 — divide by 3 because 3 mol CaCl₂ are needed per 1 mol of product."},
+    {type:"computational",q:"Theoretical yield of a reaction is 141.7 g. Actual yield is 75.0 g. What is the percent yield?",a:"52.9%",explain:"% yield = (75.0/141.7) × 100 = 52.9%. You got about half the expected product. A result below 100% is always expected in real experiments — 100% yield is essentially impossible."},
+    {type:"computational",q:"4Al + 3O₂ → 2Al₂O₃. React 75.0 g Al with 200.0 g O₂. Which is limiting? (molar masses: Al=27.0, O₂=32.0, Al₂O₃=102.0)",a:"Al is limiting. Theoretical yield = 141.7 g Al₂O₃",explain:"From Al: 75.0/27.0=2.778 mol × (2/4)=1.389 mol Al₂O₃. From O₂: 200.0/32.0=6.25 mol × (2/3)=4.167 mol Al₂O₃. Al gives less → Al is limiting. Yield = 1.389×102.0 = 141.7 g."},
+    {type:"computational",q:"2AgNO₂ + Na₂S → Ag₂S + 2NaNO₂. React 35.5 g AgNO₂ with 35.5 g Na₂S. How many grams of Ag₂S form? (molar masses: AgNO₂=153.9, Na₂S=78.0, Ag₂S=247.8)",a:"28.5 g",explain:"From AgNO₂: 35.5/153.9=0.231 mol × (1/2)=0.115 mol Ag₂S. From Na₂S: 35.5/78.0=0.455 mol × (1/1)=0.455 mol. AgNO₂ is limiting. Yield=0.115×247.8=28.5 g. Note (1/2): 2 mol AgNO₂ per 1 mol Ag₂S."}
+  ]
+},
+{
+  title:"Section 3 — Acids &amp; Bases",
+  sub:"Notes 7 · Practices 7A, 7B, 7C",
+  learn:[
+    {
+      title:"Why three definitions? A story of science evolving",
+      body:`<p>It's rare in science to have three official definitions for the same thing — it signals that the concept is genuinely slippery and that each generation of chemists had to expand the framework when the previous one failed. That's exactly what happened with acids and bases.</p>
+<p>For centuries, "acid" and "base" were purely observational categories: acids taste sour and corrode metals; bases taste bitter and feel soapy. These descriptions were useful but explained nothing about <em>why</em> these substances behaved this way.</p>
+<p>In the 1880s, Svante Arrhenius made the first mechanistic attempt: acids produce H⁺ in water, bases produce OH⁻. This was a breakthrough — suddenly you could look at HCl and say "it donates H⁺, that's why it's an acid." It worked beautifully for everything in his dataset. But his dataset was limited to substances that directly contain H⁺ or OH⁻.</p>
+<p>The problem appeared with ammonia (NH₃). It's unmistakably basic — it neutralizes acids, has a high pH, turns red litmus blue. But it has no OH⁻. Arrhenius's definition simply couldn't classify it as a base. This was a real failure.</p>
+<p>Brønsted and Lowry fixed this in the 1920s by broadening the definition: instead of requiring OH⁻, they asked what a base <em>does</em> — it accepts protons (H⁺). NH₃ does exactly this: it grabs H⁺ from water, leaving OH⁻ behind. No OH⁻ required upfront — only the behavior matters.</p>
+<p>Lewis went even further, defining acids as electron pair acceptors and bases as electron pair donors. This covers reactions where no proton transfer occurs at all — important in organic chemistry and materials science, but overkill for this course.</p>
+<div class="callout"><strong>Which definition to use:</strong> Brønsted-Lowry is the workhorse for this unit. Use Arrhenius when something obviously contains H⁺ or OH⁻ and you're in water. Use Lewis only if asked specifically or if neither of the others applies.</div>`
+    },
+    {
+      title:"Strong vs. weak — the most important distinction",
+      body:`<p>When an acid dissolves in water, it can either fully fall apart into ions (strong) or mostly stay intact as molecules (weak). This single distinction has massive consequences for all pH calculations.</p>
+<p>A <strong>strong acid</strong> dissociates essentially 100% in water. Drop HCl into water: essentially every single HCl molecule splits into H⁺ and Cl⁻. There are almost no intact HCl molecules left. This means [H⁺] = the concentration of HCl you dissolved. If you make 0.1 M HCl, you get [H⁺] = 0.1 M.</p>
+<p>A <strong>weak acid</strong> dissociates only partially — often less than 5%. Acetic acid (vinegar) at 0.1 M might only produce [H⁺] = 0.001 M, because 99% of the molecules stay intact. The pH is completely different from what you'd get if you pretended it was strong.</p>
+<div class="analogy"><strong>Strong acid = stage diver who crowd-surfs all the way:</strong> they leave the stage (molecule) and get passed across the entire crowd (water), fully dissociated. Weak acid = stage diver who falls back to the stage after a meter: they try to dissociate but mostly end up back intact. Only a few make it all the way.</div>
+<p>The same logic applies to bases. NaOH (strong) splits completely into Na⁺ and OH⁻. NH₃ (weak) only partially accepts protons from water, so most NH₃ molecules remain unchanged.</p>
+<p><strong>Strong acids to memorize:</strong> HCl, HBr, HI, HNO₃, H₂SO₄, HClO₄.<br>
+<strong>Strong bases to memorize:</strong> NaOH, KOH, and the other Group 1 hydroxides; Ca(OH)₂, Ba(OH)₂.</p>
+<div class="why"><strong>Critical for calculations:</strong> in this course, pH calculations only work cleanly for strong acids and bases. For a strong acid, you set [H⁺] = M directly. For a weak acid, you'd need equilibrium calculations (a later topic). So always check whether the acid/base is strong before setting up a pH calculation.</div>`
+    },
+    {
+      title:"Water and Kw — the equilibrium underneath everything",
+      body:`<p>Pure water isn't as simple as H₂O molecules sitting quietly. A small but constant fraction of those molecules are always splitting apart and reforming — a dynamic equilibrium:</p>
+<div class="math-box">H₂O ⇌ H⁺ + OH⁻</div>
+<p>At 25°C, this equilibrium sits at a very specific point: the product of [H⁺] and [OH⁻] is always 1.0 × 10⁻¹⁴. This is the <strong>water equilibrium constant, Kw</strong>:</p>
+<div class="math-box">Kw = [H⁺][OH⁻] = 1.0 × 10⁻¹⁴</div>
+<div class="why"><strong>Why is Kw so powerful?</strong> It creates a hard mathematical link between [H⁺] and [OH⁻]. If you push one up, the other is forced down — not by some vague chemistry principle, but by the arithmetic constraint that their product must equal 10⁻¹⁴. Add an acid and [H⁺] rises: Kw forces [OH⁻] = 10⁻¹⁴ / [H⁺], which is now smaller. Add a base and [OH⁻] rises: [H⁺] = 10⁻¹⁴ / [OH⁻], now smaller. Knowing either one always gives you the other.</div>
+<div class="analogy"><strong>Think of it like a seesaw with a fixed product instead of a fixed sum:</strong> if one side goes up by a factor of 10, the other side must go down by a factor of 10 to keep the product constant. The seesaw can't do anything else — that's the constraint Kw imposes.</div>
+<p>In pure water, [H⁺] = [OH⁻] because water splits symmetrically. From Kw: [H⁺]² = 10⁻¹⁴, so [H⁺] = 10⁻⁷ M. That's the starting point for the pH scale.</p>`
+    },
+    {
+      title:"pH and logarithms — why the scale works the way it does",
+      body:`<p>[H⁺] in solutions ranges from roughly 1 M (battery acid) to 10⁻¹⁴ M (drain cleaner). Comparing 1 and 0.00000000000001 constantly is impractical. Logarithms compress this enormous span into a manageable 0–14 range.</p>
+<div class="math-box">pH = −log[H⁺]    pOH = −log[OH⁻]    pH + pOH = 14</div>
+<div class="why"><strong>What does log actually mean?</strong> log₁₀(x) answers the question: "10 to what power gives me x?" So log(1000) = 3 because 10³ = 1000. log(0.001) = −3 because 10⁻³ = 0.001. The negative sign in pH flips the sign, so that acids (which have small [H⁺], meaning large negative exponents) give positive pH values. Pure water: [H⁺] = 10⁻⁷ → pH = −(−7) = 7.</div>
+<div class="analogy"><strong>The Richter scale for earthquakes works the same way.</strong> A magnitude 7 earthquake isn't twice as powerful as a magnitude 6 — it's 10 times more powerful. Each step on a log scale is a factor of 10. pH works identically: pH 3 has [H⁺] = 10⁻³, pH 4 has [H⁺] = 10⁻⁴. pH 3 is 10 times more acidic than pH 4, 100 times more than pH 5, 1000 times more than pH 6.</div>
+<div class="why"><strong>Where does pH + pOH = 14 come from?</strong> Take Kw: [H⁺][OH⁻] = 10⁻¹⁴. Apply −log to both sides: −log([H⁺][OH⁻]) = −log(10⁻¹⁴). The left side splits: −log[H⁺] + (−log[OH⁻]) = 14. That's pH + pOH = 14. It's not a separate rule — it's Kw in log form.</div>
+<p><strong>Working backwards from pH to [H⁺]:</strong> if pH = −log[H⁺], then [H⁺] = 10^(−pH). On a calculator: type 10^(−pH). This is the "antilog" or inverse log operation.</p>`
+    },
+    {
+      title:"How acids and bases behave in water",
+      body:`<p>The Brønsted-Lowry model gives us a clean template for writing what happens when an acid or base dissolves:</p>
+<div class="math-box">Acid template:    HA + H₂O → H₃O⁺ + A⁻
+Type 1 base:      Metal-OH → Metal⁺ + OH⁻
+Type 2 base:      B⁻ + H₂O → HB + OH⁻</div>
+<p>For acids: the molecule (HA) donates its acidic H⁺ to a water molecule, creating hydronium (H₃O⁺) — which is just H⁺ bonded to H₂O — and leaving behind the conjugate base (A⁻). Strong acids do this completely; weak acids do it only partially.</p>
+<p>For bases: Type 1 (like NaOH) just dissociate and dump OH⁻ directly into solution. Type 2 (like NH₃) steal H⁺ from water, which converts H₂O into OH⁻. The result — increased [OH⁻] — is the same for both types.</p>
+<div class="why"><strong>Why does ripping H⁺ off water produce OH⁻?</strong> Water is H₂O. Remove one H⁺ from it and you're left with H₂O minus H⁺ = HO⁻ = OH⁻. It's just subtraction at the molecular level. This is why Type 2 bases increase [OH⁻] without ever containing OH⁻ themselves.</div>
+<p>After an acid loses its proton, the remaining species (A⁻) can accept a proton — so it acts as a base. This is its <strong>conjugate base</strong>. After a base accepts a proton, it can donate one — it becomes a <strong>conjugate acid</strong>. Every acid-base reaction is really a competition over protons.</p>`
+    },
+    {
+      title:"Neutralization and titration — acids meeting bases",
+      body:`<p>When an acid and a base are mixed, they react. The acid donates H⁺; the base accepts it. The net result is always the same at the ionic level: H⁺ + OH⁻ → H₂O. The other ions (like Na⁺ and Cl⁻ from HCl + NaOH) are spectators — they don't react, they just float in solution. This is why all strong acid + strong base reactions produce a salt and water.</p>
+<p>The <strong>equivalence point</strong> is the moment when the moles of acid and base are perfectly matched — stoichiometrically equal. At this point, neither acid nor base is in excess; the solution contains only the salt and water. For strong + strong reactions, the pH is exactly 7 at equivalence. For strong acid + weak base, the salt formed is slightly acidic (pH below 7). For weak acid + strong base, the salt is slightly basic (pH above 7).</p>
+<div class="why"><strong>Why does a strong acid + weak base leave behind an acidic solution?</strong> The weak base's conjugate acid (which forms during neutralization) is strong enough to donate H⁺ back into solution. The strong acid's conjugate base (Cl⁻, NO₃⁻, etc.) is too weak to accept any H⁺. So you're left with some acid activity but no base activity — solution is acidic.</div>
+<p><strong>Titration</strong> is the lab technique that exploits the precision of the equivalence point to determine an unknown concentration. You slowly add titrant (known concentration) to analyte (unknown concentration) while monitoring pH — either with a pH meter or an indicator dye. At the moment the indicator changes color (the endpoint), you stop and record the volume of titrant used. From that volume and the titrant's known concentration, you calculate moles of titrant — which equals moles of analyte at equivalence — then divide by the analyte's volume to get its molarity.</p>
+<div class="analogy"><strong>Titration is like finding out how heavy an object is by placing it on one side of a balance and adding known weights to the other until it tips.</strong> The tipping point (equivalence) tells you the unknown. The indicator is your signal that the balance has tipped.</div>`
+    }
+  ],
+  cards:[
+    {type:"conceptual",q:"What is the Arrhenius definition of an acid and a base?",a:"Acid: produces H⁺ when dissolved in water. Base: produces OH⁻ when dissolved in water.",explain:"This is the simplest definition and works for obvious cases: HCl → H⁺ + Cl⁻ (acid), NaOH → Na⁺ + OH⁻ (base). It fails for NH₃ and other substances that act as bases without containing OH⁻."},
+    {type:"conceptual",q:"What is the Brønsted-Lowry definition, and why is it more useful than Arrhenius?",a:"Acid: proton (H⁺) donor. Base: proton (H⁺) acceptor. More useful because it covers reactions without water and explains substances like NH₃ that have no OH⁻.",explain:"NH₃ accepts H⁺ from water (NH₃ + H₂O → NH₄⁺ + OH⁻), making it a base under Brønsted-Lowry. Arrhenius can't explain this. Brønsted-Lowry just needs NH₃ to accept a proton — which it does."},
+    {type:"conceptual",q:"Why is NH₃ a base even though it contains no OH⁻?",a:"It accepts H⁺ from water, producing NH₄⁺ and leaving OH⁻ behind. The OH⁻ comes from water, not from NH₃.",explain:"NH₃ + H₂O → NH₄⁺ + OH⁻. This is a Type 2 base — it doesn't carry OH⁻ itself but causes [OH⁻] to increase by stealing H⁺ from water. Same net effect as a Type 1 base like NaOH."},
+    {type:"conceptual",q:"What is the difference between a strong acid and a weak acid?",a:"Strong acid: dissociates completely in water — every molecule releases its H⁺. Weak acid: only partially dissociates — most molecules stay intact.",explain:"HCl in water: essentially 100% → H⁺ + Cl⁻. Acetic acid: only ~1% dissociates; 99% stays as CH₃COOH. For pH calculations, [H⁺] = M only for strong acids where all of it becomes H⁺."},
+    {type:"conceptual",q:"What is the difference between a strong acid and a concentrated acid?",a:"Completely different. Strong/weak = how completely it dissociates. Concentrated/dilute = how much of it is present. These are independent properties.",explain:"12 M acetic acid = concentrated but weak (lots of molecules, most stay intact). 0.001 M HCl = dilute but strong (very little of it, but all dissociates). Never confuse these two axes."},
+    {type:"conceptual",q:"What does Kw = [H⁺][OH⁻] = 1×10⁻¹⁴ mean?",a:"In any aqueous solution at 25°C, the product of H⁺ and OH⁻ concentrations always equals 1×10⁻¹⁴. If one goes up, the other must go down.",explain:"If you add acid: [H⁺] rises, so [OH⁻] must fall to keep the product = 10⁻¹⁴. Add base: [OH⁻] rises, [H⁺] falls. They are inversely linked — knowing one always lets you find the other."},
+    {type:"conceptual",q:"Why is neutral pH equal to 7?",a:"In pure water, [H⁺] = [OH⁻] = 1×10⁻⁷ M (both equal since water splits symmetrically). pH = −log(10⁻⁷) = 7.",explain:"Neutral doesn't mean no H⁺ — it means equal amounts of H⁺ and OH⁻. Neither ion dominates. Water always has a tiny concentration of both from its own spontaneous dissociation."},
+    {type:"conceptual",q:"What does it mean for pH to be on a logarithmic scale?",a:"Each whole number change in pH represents a 10× change in [H⁺]. pH 3 has 10 times more H⁺ than pH 4, 100 times more than pH 5.",explain:"The log scale compresses 14 orders of magnitude into a 0–14 range. This is the same idea as the Richter scale for earthquakes — each step is not additive but multiplicative by a factor of 10."},
+    {type:"conceptual",q:"What is a conjugate base, and how is it formed?",a:"A conjugate base is what remains after an acid donates its proton. It is the acid minus one H⁺.",explain:"HCl donates H⁺ → conjugate base is Cl⁻. HC₂H₃O₂ donates H⁺ → conjugate base is C₂H₃O₂⁻. The conjugate base can potentially accept that proton back — it behaves as a base."},
+    {type:"conceptual",q:"What is the equivalence point in a titration?",a:"The point at which moles of acid exactly equal moles of base — complete neutralization. For strong acid + strong base: equivalence point is at pH 7.",explain:"An indicator signals the equivalence point with a color change. The endpoint (color change) is used as a practical approximation. The indicator chosen must change color at the right pH range for the specific titration."},
+    {type:"conceptual",q:"Why should the titrant always be a strong acid or base?",a:"Strong acids/bases dissociate completely — you know exactly how many moles of H⁺ or OH⁻ you're adding. A weak titrant gives a gradual, imprecise endpoint.",explain:"Precision is the whole point. You need to pinpoint the exact moment moles of acid = moles of base. A strong titrant produces a sharp color change at that moment. A weak titrant's partial dissociation creates a fuzzy, hard-to-identify transition."},
+    {type:"conceptual",q:"What is an amphoteric substance?",a:"A substance that can act as either an acid or a base depending on what it's mixed with. Water is the prime example.",explain:"Water can donate H⁺ (acting as an acid) when mixed with NH₃, or accept H⁺ (acting as a base) when mixed with HCl. This flexibility is why water is such a universal solvent for acid-base chemistry."},
+    {type:"conceptual",q:"Is HCN an Arrhenius acid in the reaction HCN + SO₄²⁻ → HSO₄⁻ + CN⁻?",a:"No — this is not an aqueous reaction (no water), so Arrhenius doesn't apply. But HCN is a Brønsted-Lowry acid because it donates H⁺ to SO₄²⁻.",explain:"Arrhenius requires the acid to produce H⁺ specifically in water. This reaction has no water — HCN donates its proton directly to SO₄²⁻. Brønsted-Lowry has no such restriction: any proton transfer qualifies."},
+    {type:"computational",q:"Calculate the pH of a solution with [H⁺] = 1×10⁻⁵ M.",a:"pH = 5",explain:"pH = −log(1×10⁻⁵) = −(−5) = 5. When [H⁺] is a clean power of 10, pH is just that exponent made positive. No calculator needed."},
+    {type:"computational",q:"Calculate the pH of a solution with [H⁺] = 2.5×10⁻³ M.",a:"pH = 2.60",explain:"pH = −log(2.5×10⁻³). Calculator: log(2.5×10⁻³) = −2.602, so pH = 2.60. When the coefficient isn't 1, you must use a calculator. The answer is between 2 and 3, consistent with [H⁺] between 10⁻² and 10⁻³."},
+    {type:"computational",q:"A solution has pOH = 4. What is the pH?",a:"pH = 10",explain:"pH + pOH = 14 → pH = 14 − 4 = 10. Basic solution (pH above 7), which makes sense since pOH = 4 means [OH⁻] = 10⁻⁴ M — relatively high."},
+    {type:"computational",q:"What is [H⁺] in a solution with pH = 3.50?",a:"3.16×10⁻⁴ M",explain:"[H⁺] = 10⁻ᵖᴴ = 10⁻³·⁵⁰. Calculator: 10^(−3.50) = 3.16×10⁻⁴. The answer falls between 10⁻³ and 10⁻⁴, consistent with pH between 3 and 4."},
+    {type:"computational",q:"What is the pH of 0.034 M HNO₃?",a:"pH = 1.47",explain:"HNO₃ is a strong acid → fully dissociates → [H⁺] = 0.034 M. pH = −log(0.034) = 1.47. Always verify the acid is strong before assuming [H⁺] = M. Weak acids require a different approach."},
+    {type:"computational",q:"What is the pH of 0.0105 M NaOH?",a:"pH = 12.02",explain:"NaOH strong base → [OH⁻] = 0.0105 M. pOH = −log(0.0105) = 1.979. pH = 14 − 1.979 = 12.02. For bases: find pOH first using [OH⁻], then convert via pH + pOH = 14."},
+    {type:"computational",q:"Calculate the pH of 0.025 M Ca(OH)₂.",a:"pH = 12.70",explain:"Ca(OH)₂ releases 2 OH⁻ per formula unit → [OH⁻] = 2 × 0.025 = 0.050 M. pOH = −log(0.050) = 1.301. pH = 14 − 1.301 = 12.70. Don't forget to multiply by 2 — a very common error."},
+    {type:"computational",q:"A solution has [OH⁻] = 2×10⁻⁸ M. What is the pH?",a:"pH = 6.30",explain:"Method 1: [H⁺] = 10⁻¹⁴/2×10⁻⁸ = 5×10⁻⁷ → pH = −log(5×10⁻⁷) = 6.30. Method 2: pOH = −log(2×10⁻⁸) = 7.70 → pH = 14−7.70 = 6.30. ✓ Same answer both ways."},
+    {type:"computational",q:"An HCl solution has pH = 1.96. What is the concentration?",a:"0.0110 M",explain:"HCl is strong → [H⁺] = [HCl]. [H⁺] = 10⁻¹·⁹⁶ = 0.01096 ≈ 0.0110 M. On calculator: 10^(−1.96). Working backwards from pH to [H⁺] using the inverse log."},
+    {type:"computational",q:"What volume of 0.100 M NaOH is needed to titrate 50.0 mL of 0.200 M HNO₃?",a:"0.100 L (100 mL)",explain:"mol HNO₃ = 0.200 × 0.0500 = 0.0100 mol. Ratio 1:1 → 0.0100 mol NaOH needed. V = 0.0100/0.100 = 0.100 L. More NaOH volume needed because it's less concentrated — you need a bigger volume of a weaker solution to deliver the same moles."},
+    {type:"computational",q:"Calculate the pH of 0.046 M Al(OH)₃.",a:"pH = 13.14",explain:"Al(OH)₃ releases 3 OH⁻ per formula unit → [OH⁻] = 3 × 0.046 = 0.138 M. pOH = −log(0.138) = 0.860. pH = 14 − 0.860 = 13.14. Always identify how many OH⁻ per formula unit before calculating [OH⁻]."},
+    {type:"computational",q:"A Ca(OH)₂ solution has pH = 12.58. What is the concentration of Ca(OH)₂?",a:"0.0190 M",explain:"pOH = 14−12.58 = 1.42. [OH⁻] = 10⁻¹·⁴² = 0.0380 M. Ca(OH)₂ gives 2 OH⁻ per molecule → [Ca(OH)₂] = 0.0380/2 = 0.0190 M. Divide by 2 because each molecule contributes 2 OH⁻ — concentration of the compound is half the [OH⁻]."}
+  ]
+}
+];
+
+let curSection=0,curMode='learn',curCardIdx=0,curFilter='all',filtCards=[],flipped=false;
+
+function switchSection(i){
+  curSection=i;curCardIdx=0;flipped=false;curFilter='all';
+  document.querySelectorAll('.nav-btn').forEach((b,j)=>b.classList.toggle('active',i===j));
+  render();
+}
+function switchMode(m){
+  curMode=m;curCardIdx=0;flipped=false;
+  document.querySelectorAll('.mode-btn').forEach(b=>b.classList.toggle('active',b.textContent.trim()===(m==='learn'?'Learn':'Practice flashcards')));
+  render();
+}
+function render(){
+  const la=document.getElementById('learn-area'),pa=document.getElementById('practice-area');
+  la.style.display=curMode==='learn'?'block':'none';
+  pa.style.display=curMode==='practice'?'block':'none';
+  curMode==='learn'?renderLearn():renderPractice();
+}
+function renderLearn(){
+  const s=sections[curSection];
+  let h=`<div class="section-title">${s.title}</div><div class="section-sub">${s.sub}</div>`;
+  s.learn.forEach((b,i)=>{
+    h+=`<div class="learn-block"><div class="learn-header" onclick="toggleL(${i})"><span>${b.title}</span><span class="chev" id="cv${i}">▾</span></div><div class="learn-body" id="lb${i}">${b.body}</div></div>`;
+  });
+  document.getElementById('learn-area').innerHTML=h;
+}
+function toggleL(i){
+  const b=document.getElementById(`lb${i}`),c=document.getElementById(`cv${i}`);
+  const o=b.classList.toggle('open');c.style.transform=o?'rotate(180deg)':'';
+}
+function getFC(){
+  const cards=sections[curSection].cards;
+  return curFilter==='all'?[...cards]:cards.filter(c=>c.type===curFilter);
+}
+function renderPractice(){
+  filtCards=getFC();
+  if(curCardIdx>=filtCards.length)curCardIdx=0;
+  const s=sections[curSection],card=filtCards[curCardIdx],total=filtCards.length;
+  let h=`<div class="section-title">${s.title}</div><div class="section-sub">${s.sub}</div>
+  <div class="fc-controls">
+    <div class="fc-filter">
+      <button class="fc-filter-btn ${curFilter==='all'?'active':''}" onclick="setF('all')">All</button>
+      <button class="fc-filter-btn ${curFilter==='conceptual'?'active':''}" onclick="setF('conceptual')">Conceptual</button>
+      <button class="fc-filter-btn ${curFilter==='computational'?'active':''}" onclick="setF('computational')">Computational</button>
+    </div>
+    <div class="fc-progress"><span>Card ${curCardIdx+1} of ${total}</span><button class="shuffle-btn" onclick="doShuffle()">↺ Shuffle</button></div>
+  </div>
+  <div class="card" onclick="flipC()">
+    <div class="card-front">
+      <span class="card-type-badge ${card.type}">${card.type}</span>
+      <div class="card-q">${card.q}</div>
+      ${flipped?'':'<div class="card-hint">Tap to reveal answer</div>'}
+    </div>
+    <div class="card-back ${flipped?'shown':''}">
+      <div class="card-answer">Answer: ${card.a}</div>
+      <div class="card-explain">${card.explain}</div>
+    </div>
+  </div>
+  <div class="card-nav">
+    <button onclick="prevC()" ${curCardIdx===0?'disabled':''}>← Previous</button>
+    <button onclick="nextC()" ${curCardIdx===total-1?'disabled':''}>Next →</button>
+  </div>`;
+  document.getElementById('practice-area').innerHTML=h;
+}
+function flipC(){flipped=!flipped;renderPractice();}
+function nextC(){if(curCardIdx<filtCards.length-1){curCardIdx++;flipped=false;renderPractice();}}
+function prevC(){if(curCardIdx>0){curCardIdx--;flipped=false;renderPractice();}}
+function setF(f){curFilter=f;curCardIdx=0;flipped=false;renderPractice();}
+function doShuffle(){
+  filtCards=getFC();
+  for(let i=filtCards.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[filtCards[i],filtCards[j]]=[filtCards[j],filtCards[i]];}
+  curCardIdx=0;flipped=false;renderPractice();
+}
+render();
+</script>
+</body>
+</html>
